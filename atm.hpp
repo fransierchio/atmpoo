@@ -81,7 +81,7 @@ class ATM
             
         }
 
-        void userDetails () 
+        virtual void userDetails() 
         {
             cout << endl << "nombre: " << name;
             cout << endl << "Numero de Telefono: " << mobileNumber;
@@ -91,9 +91,7 @@ class ATM
             system("cls");
         }
 
-        int opcion;
-
-    void login ()
+    virtual void login ()
     {
         bool pass=0;
         int account_log, pass_log;
@@ -125,6 +123,7 @@ class ATM
 
     void interface()
     {
+        int opcion;
         bool pass=0;
         while (pass != 1)
         {
@@ -188,7 +187,7 @@ class banesco: public ATM
           banesco(int accountNo_set = 0, double balance_set = 0, string name_set = "NULL", int password_set = 0, string mobileNumber_set = "NULL", 
           string securityQa_set = "NULL", string cedula_set = "NULL"):ATM(accountNo_set, balance_set, name_set, password_set, mobileNumber_set), securityQa(securityQa_set), cedula(cedula_set) {}
 
-        void userDetails ()
+        void userDetails() override
         {
             cout << endl << "nombre: " << getName();
             cout << endl << "Numero de Telefono: " << getMobileNumber();
@@ -198,35 +197,33 @@ class banesco: public ATM
             
         }
 
-        void login ()
-    {
-        bool pass=0;
-        int account_log, pass_log;
-        string security_log;
-        while (pass==0) 
+        void login () override
         {
-            cout << "Ingresa tu numero de cuenta: "<<endl;
-            cin >> account_log;
-            cout << "Ingresa tu contrasena: " << endl;
-            cin >> pass_log;
-            cout << "Ingresa la pregunta de seguridad: " << endl;
-            cin >> security_log;
-            cin.clear(); cin.ignore();
+            bool pass=0;
+            int account_log, pass_log;
+            string security_log;
+            while (pass==0) 
+            {
+                cout << "Ingresa tu numero de cuenta: "<<endl;
+                cin >> account_log;
+                cout << "Ingresa tu contrasena: " << endl;
+                cin >> pass_log;
+                cout << "Ingresa la pregunta de seguridad: " << endl;
+                cin >> security_log;
+                cin.clear(); cin.ignore();
 
-            if (account_log==getAccountNO() && pass_log==getPassword() && security_log==securityQa)
-            {
-                pass = 1;
-                system("cls");
-                interface();
-            } else 
-            {
-                pass = 0;
-                cout << "Numero de cuenta y/o contrasena incorrectas"<< endl;
-                _getch();
-                system("cls");
+                if (account_log==getAccountNO() && pass_log==getPassword() && security_log==securityQa)
+                {
+                    pass = 1;
+                    system("cls");
+                    interface();
+                } else 
+                {
+                    pass = 0;
+                    cout << "Numero de cuenta y/o contrasena incorrectas"<< endl;
+                    _getch();
+                    system("cls");
+                }
             }
         }
-        
-        
-    }
 };
