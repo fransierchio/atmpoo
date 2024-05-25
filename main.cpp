@@ -8,8 +8,8 @@ using namespace std;
 int main() 
 {
     setlocale(LC_ALL, "en_US.utf8");
-    Users userDatabase;
-    userDatabase.loadUsersFromFile();
+    ATM banco;
+    banco.loadUsersFromFile();
     
     int accountNO;
     string password, question;
@@ -22,7 +22,8 @@ int main()
         cout << "Ingresa tu contrasena: "; cin >> password;
         cout << "Ingresa la respuesta a tu pregunta de seguridad: "; cin >> question;
 
-        option = userDatabase.authy(accountNO, password, question);
+        option = banco.authy(accountNO, password, question);
+
         if (option == 1) 
         {
             // Admin user
@@ -40,22 +41,22 @@ int main()
                 switch (choice) 
                 {
                     case 1:
-                        userDatabase.newUser();
+                        banco.newUser();
                         _getch();
                         system("cls");
                         break;
                     case 2:
-                        userDatabase.modifyUser();
+                        banco.modifyUser();
                         _getch();
                         system("cls");
                         break;
                     case 3:
-                        userDatabase.listUser();
+                        banco.listUser();
                         _getch();
                         system("cls");
                         break;
                     case 4:
-                        userDatabase.deleteUser();
+                        banco.deleteUser();
                         _getch();
                         system("cls");
                         break;
@@ -69,7 +70,7 @@ int main()
                 }
             }
         } 
-        /**else if (option == 2) 
+        else if (option == 2) 
         {
             int choice;
             while (true) 
@@ -90,26 +91,36 @@ int main()
                         cout << "Adiós" << endl;
                         return 0;
                     case 1:
-                        userInterface.userMenu.checkBalance();
+                        banco.checkBalance();
+                        _getch();
+                        system("cls");
                         break;
                     case 2:
-                        userInterface.userMenu.withdrawMoney();
+                        banco.withdrawMoney();
+                        _getch();
+                        system("cls");
                         break;
                     case 3:
-                        userInterface.userMenu.addMoney();
+                        banco.addMoney();
+                        _getch();
+                        system("cls");
                         break;
                     case 4:
-                        userInterface.userMenu.modifyNumber();
+                        banco.modifyNumber();
+                        _getch();
+                        system("cls");
                         break;
                     case 5:
-                        userInterface.userMenu.userDetails();
+                        banco.userDetails();
+                        _getch();
+                        system("cls");
                         break;
                     default:
                         cout << "Opción inválida" << endl;
                         break;
                 }
             }
-        } **/
+        } 
         else 
         {
             cout << "Datos incorrectos, vuelve a intentar" << endl;

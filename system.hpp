@@ -17,14 +17,17 @@ class ATM
         string securityQa;
         string cedula;
         string rol;
+        vector<ATM> users;
+        int currentUserIndex;
 
     public:   
+
     //Constructor
-        ATM(int accountNo_set = 0, double balance_set = 0, string name_set = "NULL", string password_set = 0, string mobileNumber_set = "NULL", 
+        ATM(int accountNo_set = 0, double balance_set = 0, string name_set = "NULL", string password_set = "NULL", string mobileNumber_set = "NULL", 
           string securityQa_set = "NULL", string cedula_set = "NULL", string rol_set="NULL") 
         {
             accountNO = accountNo_set; balance = balance_set; name = name_set; password = password_set; mobileNumber = mobileNumber_set;
-            securityQa = securityQa_set; cedula = cedula_set; rol = rol_set;
+            securityQa = securityQa_set; cedula = cedula_set; rol = rol_set; currentUserIndex = -1;
         }
 
     //GetData
@@ -44,83 +47,116 @@ class ATM
         void setRol(const string& newRol) { rol = newRol; }
         void setPassword(string newPassword) { password = newPassword; }
         void setSecurityQ(string newSecurityQ) { securityQa = newSecurityQ; }
+        void setBalance(double newbalance) { balance = newbalance; }
 
     //check balance, withdraw money, modify mobile number, add money, user details
-        void checkBalance ()
-        {
-            cout << "tu balance es: " << balance;
+        void checkBalance() {
+        if (currentUserIndex != -1) { // Verificar si hay un usuario autenticado
+            cout << "Tu balance es: " << users[currentUserIndex].getBalance();
             _getch();
+        } else {
+            cout << "Debes autenticarte primero." << endl;
         }
+    }
 
-        void withdrawMoney ()
-        {
+    void withdrawMoney() {
+        if (currentUserIndex != -1) { // Verificar si hay un usuario autenticado
             double money_withdraw;
-            cout << "Cuanto dinero deseas retirar?: "; cin >> money_withdraw;
-            if (money_withdraw>0 && balance >= money_withdraw)
-            {
-                balance -= money_withdraw;
+            cout << "Cuánto dinero deseas retirar?: "; cin >> money_withdraw;
+            if (money_withdraw > 0 && users[currentUserIndex].getBalance() >= money_withdraw) {
+                users[currentUserIndex].setBalance(users[currentUserIndex].getBalance() - money_withdraw);
                 cout << "Retiro exitoso" << endl;
-                cout << "Tu nuevo balance es: " << balance << endl;
+                cout << "Tu nuevo balance es: " << users[currentUserIndex].getBalance() << endl;
+            } else {
+                cout<< "Monto incorrecto o saldo insuficiente, vuelve a intentar" << endl;
+            }
+        } else {
+            cout << "Debes autenticarte primero." << endl;
+        }
+        fstream saveuser("database.txt", ios::out | ios::trunc);
+        if (saveuser.is_open()) {
+            for (auto user : users) 
+            {
+                saveuser << user.getAccountNO() << " " << user.getName() << " " << user.getCedula() << " " << user.getRol() << " "
+                << user.getBalance() << " " << user.getPassword() << " " << user.getMobileNumber() << " " << user.getSecurityQa() << endl;
+            }
+            saveuser.close();
             } else 
             {
-                cout<< "Monto erroneo, vuelve a intentar" << endl;
+                cout << "Error al abrir el archivo" << endl;
             }
-            
-        }
+    }
 
-        void modifyNumber ()
-        {
-            string prevNumber,newNumber;
-            cout << "Ingrese el numero antiguo: "; cin >> prevNumber;
-            if (mobileNumber == prevNumber) 
-            { 
-                cout << "Ingrese el numero nuevo: ";
-                cin>> newNumber;
-                mobileNumber=newNumber;
-                cout << "Actualizacion de datos exitosa" << endl;
+        void modifyNumber() {
+        if (currentUserIndex != -1) { // Verificar si hay un usuario autenticado
+            string prevNumber, newNumber;
+            cout << "Ingrese el número antiguo: "; cin >> prevNumber;
+            if (users[currentUserIndex].getMobileNumber() == prevNumber) {
+                cout << "Ingrese el número nuevo: ";
+                cin >> newNumber;
+                users[currentUserIndex].setMobileNumber(newNumber);
+                cout << "Actualización de número exitosa" << endl;
+            } else {
+                cout << "El número antiguo es incorrecto" << endl;
+            }
+        } else {
+            cout << "Debes autenticarte primero." << endl;
+        }
+        fstream saveuser("database.txt", ios::out | ios::trunc);
+        if (saveuser.is_open()) {
+            for (auto user : users) 
+            {
+                saveuser << user.getAccountNO() << " " << user.getName() << " " << user.getCedula() << " " << user.getRol() << " "
+                << user.getBalance() << " " << user.getPassword() << " " << user.getMobileNumber() << " " << user.getSecurityQa() << endl;
+            }
+            saveuser.close();
             } else 
             {
-                cout << "El numero antiguo es incorrecto";
+                cout << "Error al abrir el archivo" << endl;
             }
-        }
+    }
 
-        void addMoney ()
-        {
-            double addmoney;
-            cout << "Cuanto dinero deseas depositar?: "; cin >> addmoney;
-             if (addmoney>0)
+    void addMoney() {
+        if (currentUserIndex != -1) { // Verificar si hay un usuario autenticado
+            double addMoney;
+            cout << "Cuánto dinero deseas depositar?: "; cin >> addMoney;
+            if (addMoney > 0) {
+                users[currentUserIndex].setBalance(users[currentUserIndex].getBalance() + addMoney);
+                cout << "Depósito exitoso" << endl;
+                cout << "Tu nuevo balance es: " << users[currentUserIndex].getBalance() << endl;
+            } else {
+                cout << "Monto incorrecto, vuelve a intentar" << endl;
+            }
+        } else {
+            cout << "Debes autenticarte primero." << endl;
+        }
+        fstream saveuser("database.txt", ios::out | ios::trunc);
+        if (saveuser.is_open()) {
+            for (auto user : users) 
             {
-                balance += addmoney; 
-                cout << "deposito exitoso" << endl;
-                cout << "Tu nuevo balance es: " << balance << endl;
+                saveuser << user.getAccountNO() << " " << user.getName() << " " << user.getCedula() << " " << user.getRol() << " "
+                << user.getBalance() << " " << user.getPassword() << " " << user.getMobileNumber() << " " << user.getSecurityQa() << endl;
+            }
+            saveuser.close();
             } else 
             {
-                cout<< "Monto erroneo, vuelve a intentar" << endl;
+                cout << "Error al abrir el archivo" << endl;
             }
-            
+    }
+
+    void userDetails() {
+        if (currentUserIndex != -1) { // Verificar si hay un usuario autenticado
+            cout << "Nombre: " << users[currentUserIndex].getName() << endl;
+            cout << "Número de Teléfono: " << users[currentUserIndex].getMobileNumber() << endl;
+            cout << "Cédula: " << users[currentUserIndex].getCedula() << endl;
+            cout << "Rol: " << users[currentUserIndex].getRol() << endl;
+            cout << "Número de cuenta: " << users[currentUserIndex].getAccountNO() << endl;
+            // No mostrar la contraseña por razones de seguridad
+        } else {
+            cout << "Debes autenticarte primero." << endl;
         }
+    }
 
-        void userDetails()
-        {
-            cout << endl << "nombre: " << name;
-            cout << endl << "Numero de Telefono: " << mobileNumber;
-            cout << endl << "Cedula: " << cedula;
-            cout << endl << "Rol: " << rol;
-            cout << endl << "Numero de cuenta: " << accountNO;
-            cout << endl << "Contrasena: " << password;
-            
-        }
-};
-
-
-class Users
-{
-    //datos
-    private:
-    vector<ATM> users;
-
-    public:
-    //metodos
     void newUser()
     {
         srand(time(0));
@@ -173,7 +209,7 @@ class Users
                 cout << endl << "Cedula: " << users[i].getCedula();
                 cout << endl << "Rol: " << users[i].getRol();
                 cout << endl << "Numero de cuenta: " << users[i].getAccountNO();
-                cout << endl << "Contrasena: " << users[i].getPassword();
+                cout << endl << "Contrasena: " << users[i].getPassword()<<endl;
 
                 cout << "*********************"<<endl;
                 cout << "Nuevos Datos"<<endl;
@@ -270,16 +306,21 @@ class Users
     }
 
       int authy(int accountNO, string password, string securityQa) {
-    for (auto user : users) {
-        if (user.getAccountNO() == accountNO && user.getPassword() == password && user.getSecurityQa() == securityQa) {
-            if (user.getRol() == "admin") {
-                return 1; // Admin user
-            } else {
-                return 2; // Regular user
+        for (int i = 0; i < users.size(); i++) {
+            if (users[i].getAccountNO() == accountNO && users[i].getPassword() == password && users[i].getSecurityQa() == securityQa) {
+                if (users[i].getRol() == "admin") {
+                    currentUserIndex = i; // Establecer currentUserIndex para el usuario autenticado
+                    return 1; // Usuario administrador
+                } else {
+                    currentUserIndex = i; // Establecer currentUserIndex para el usuario autenticado
+                    return 2; // Usuario regular
+                }
             }
         }
+        currentUserIndex = -1; // Restablecer currentUserIndex si la autenticación falla
+        return -1; // Autenticación fallida
     }
-    return -1; // Authentication failed
-}
+
+
      
 };
