@@ -1,6 +1,9 @@
 #include <iostream>
 #include <string.h>
 #include <conio.h>
+#include <vector>
+#include <ctime>
+#include <fstream>
 using namespace std;
 
 class ATM 
@@ -64,7 +67,7 @@ class ATM
                 cout << "El numero antiguo es incorrecto";
             }
         }
-
+        void admin ();
         void addMoney ()
         {
             double addmoney;
@@ -91,36 +94,6 @@ class ATM
             system("cls");
         }
 
-    virtual void login ()
-    {
-        bool pass=0;
-        int account_log, pass_log;
-        while (pass==0) 
-        {
-            cout << "Ingresa tu numero de cuenta: "<<endl;
-            cin >> account_log;
-            cout << "Ingresa tu contrasena: " << endl;
-            cin >> pass_log;
-            cin.clear(); cin.ignore();
-
-            if (account_log==getAccountNO() && pass_log==getPassword())
-            {
-                pass = 1;
-                system("cls");
-                interface();
-            } else 
-            {
-                pass = 0;
-                cout << "Numero de cuenta y/o contrasena incorrectas"<< endl;
-                _getch();
-                system("cls");
-            }
-        }
-        
-        
-    }
-
-
     void interface()
     {
         int opcion;
@@ -133,6 +106,7 @@ class ATM
         cout << "3. Ingresar dinero" << endl;
         cout << "4. Modificar numero" << endl;
         cout << "5. Detalles de usuario" << endl;
+        cout << "6. Opciones de Administrador" << endl;
         cout << "0. Salir" << endl;
         cin >> opcion;
         
@@ -167,6 +141,10 @@ class ATM
             _getch();
             system("cls");
             break;
+        case 6:
+            admin();
+            _getch();
+            system("cls");
         default:
             cout << "Opcion invalida";
             _getch();
@@ -183,21 +161,131 @@ class banesco: public ATM
     private:
         string securityQa;
         string cedula;
+        string rol;
     public:
           banesco(int accountNo_set = 0, double balance_set = 0, string name_set = "NULL", int password_set = 0, string mobileNumber_set = "NULL", 
-          string securityQa_set = "NULL", string cedula_set = "NULL"):ATM(accountNo_set, balance_set, name_set, password_set, mobileNumber_set), securityQa(securityQa_set), cedula(cedula_set) {}
+          string securityQa_set = "NULL", string cedula_set = "NULL", string rol_set="NULL"):
+          ATM(accountNo_set, balance_set, name_set, password_set, mobileNumber_set), securityQa(securityQa_set), cedula(cedula_set), rol(rol_set) {}
 
         void userDetails() override
         {
             cout << endl << "nombre: " << getName();
             cout << endl << "Numero de Telefono: " << getMobileNumber();
             cout << endl << "Cedula: " << cedula;
+            cout << endl << "Rol: " << rol;
             cout << endl << "Numero de cuenta: " << getAccountNO();
             cout << endl << "Contrasena: " << getPassword();
             
         }
 
-        void login () override
+        void admin ()
+        {
+        int opcion;
+        bool pass=0;
+        while (pass != 1)
+        {
+        cout << "*****Panel de Administrador*****" << endl;
+        cout << "1. Crear Usuario" << endl;
+        cout << "2. Buscar Usuario" << endl;
+        cout << "3. Borrar Usuario" << endl;
+        cout << "4. Lista de Usuarios" << endl;
+        cout << "0. Salir" << endl;
+        cin >> opcion;
+        
+        switch (opcion)
+        {
+        case 0:
+            cout << "chao we";
+            pass = 1;
+            break;
+        case 1:
+            checkBalance ();
+            _getch();
+            system("cls");
+            break;
+        case 2:
+            withdrawMoney();
+            _getch();
+            system("cls");
+            break;
+        case 3:
+            addMoney ();
+            _getch();
+            system("cls");
+            break;
+        case 4:
+            modifyNumber ();
+            _getch();
+            system("cls");
+            break;
+        case 5:
+            userDetails();
+            _getch();
+            system("cls");
+            break;
+        case 6:
+            admin();
+            _getch();
+            system("cls");
+        default:
+            cout << "Opcion invalida";
+            _getch();
+            system("cls");
+            break;
+            }
+        }
+        }
+        string getSecurityQa(){return securityQa;}
+};
+
+class userManagment : public banesco
+{
+    //datos
+    private:
+        vector<banesco> Usuarios;
+    //metodos
+    //crear usuario en vector, buscar, borrar y lista
+    public:
+        
+        void newUser()
+        {
+            srand(time(0));
+            int accountNo_set = 900000 + rand() % 100000; // Genera un número de cuenta aleatorio de 6 dígitos
+            double balance_set;
+            string name_set, mobileNumber_set, securityQa_set, cedula_set, rol_set;
+            int password_set;
+
+            cout << "Nombre: ";
+            cin >> name_set;
+            cout << "Cedula: ";
+            cin >> cedula_set;
+            cout << "Rol: ";
+            cin >> rol_set;
+            cout << "Balance: ";
+            cin >> balance_set;
+            cout << "Contrasena: ";
+            cin >> password_set;
+            cout << "Numero de Telefono: ";
+            cin >> mobileNumber_set;
+            cout << "Pregunta de seguridad: ";
+            cin >> securityQa_set;
+
+            banesco usernames(accountNo_set, balance_set, name_set, password_set, mobileNumber_set, securityQa_set, cedula_set, rol_set);
+            Usuarios.push_back(usernames);
+            cout << "Usuario creado con éxito. Numero de Cuenta: " << accountNo_set << endl;
+            
+        } 
+
+        void listUsers()
+        {
+            for (int i = 0; i < Usuarios.size(); i++)
+            {
+                cout << Usuarios[i].getName() << endl;
+            }
+            
+        }
+
+        void loginUsers()
         {
             bool pass=0;
             int account_log, pass_log;
@@ -212,7 +300,9 @@ class banesco: public ATM
                 cin >> security_log;
                 cin.clear(); cin.ignore();
 
-                if (account_log==getAccountNO() && pass_log==getPassword() && security_log==securityQa)
+                for (int i = 0; i < Usuarios.size(); i++)
+                {
+                if (account_log==Usuarios[i].getAccountNO() && pass_log==Usuarios[i].getPassword() && security_log==Usuarios[i].getSecurityQa())
                 {
                     pass = 1;
                     system("cls");
@@ -224,6 +314,9 @@ class banesco: public ATM
                     _getch();
                     system("cls");
                 }
+                }  
             }
         }
-};
+
+
+}; 
