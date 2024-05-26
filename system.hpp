@@ -145,17 +145,58 @@ class ATM
     }
 
     void userDetails() {
-        if (currentUserIndex != -1) { // Verificar si hay un usuario autenticado
+        if (currentUserIndex != -1) {
             cout << "Nombre: " << users[currentUserIndex].getName() << endl;
             cout << "Número de Teléfono: " << users[currentUserIndex].getMobileNumber() << endl;
             cout << "Cédula: " << users[currentUserIndex].getCedula() << endl;
             cout << "Rol: " << users[currentUserIndex].getRol() << endl;
             cout << "Número de cuenta: " << users[currentUserIndex].getAccountNO() << endl;
-            // No mostrar la contraseña por razones de seguridad
         } else {
             cout << "Debes autenticarte primero." << endl;
         }
     }
+
+    void transferMoney()
+    {
+        if (currentUserIndex!= -1)
+        {
+            bool userFound = false;
+            int transferAcc;double transferMoney;
+            cout << "Escribe el numero de cuenta al que deseas transferir" << endl;
+            cin >> transferAcc;
+            cout << "Cuanto dinero deseas transferir?" << endl;
+            cin >> transferMoney;
+
+            for (int i = 0; i < users.size(); i++)
+            {
+                if(users[i].getAccountNO()==transferAcc && users[i].getAccountNO() != users[currentUserIndex].getAccountNO()) 
+                {
+                    userFound=true;
+                    users[currentUserIndex].setBalance(users[currentUserIndex].getBalance()-transferMoney);
+                    users[i].setBalance(users[i].getBalance()+transferMoney);
+                    cout<<"Transferencia Realizada con Exito, nuevo balance: "<<users[currentUserIndex].getBalance()<<" $";
+                    
+                }
+            }
+            if (!userFound)
+            {
+                cout<<"Usuario Invalido";
+            }
+            fstream saveuser("database.txt", ios::out | ios::trunc);
+            if (saveuser.is_open())
+                    {
+                     for (auto user : users) 
+                        {
+                            saveuser << user.getAccountNO() << " " << user.getName() << " " << user.getCedula() << " " << user.getRol() << " "
+                            << user.getBalance() << " " << user.getPassword() << " " << user.getMobileNumber() << " " << user.getSecurityQa() << endl;
+                        }
+                    }
+            
+        }
+        
+    }
+
+
 
     void newUser()
     {
@@ -300,7 +341,7 @@ class ATM
     {
         for (int i = 0; i < users.size(); i++)
         {
-            cout << users[i].getName();
+            cout << users[i].getName()<<endl<<"\n";
         }
         
     }

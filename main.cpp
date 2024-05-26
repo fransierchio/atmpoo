@@ -82,6 +82,7 @@ int main()
                 cout << "3. Ingresar dinero" << endl;
                 cout << "4. Modificar numero" << endl;
                 cout << "5. Detalles de usuario" << endl;
+                cout << "6. Transferir dinero" << endl;
                 cout << "0. Salir" << endl;
                 cout << "Selecciona una opción: "; cin >> choice;
 
@@ -112,6 +113,11 @@ int main()
                         break;
                     case 5:
                         banco.userDetails();
+                        _getch();
+                        system("cls");
+                        break;
+                    case 6:
+                        banco.transferMoney();
                         _getch();
                         system("cls");
                         break;
